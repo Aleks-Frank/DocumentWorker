@@ -34,7 +34,7 @@ public class DocxReader {
     }
 
     public List<DocumentString> parseDocument() throws IOException {
-        List<DocumentString> deletions = new ArrayList<>();
+        List<DocumentString> deletions;
 
         try(ZipFile zipFile = new ZipFile(docxFile)){
             ZipEntry documentEntry = zipFile.getEntry("word/document.xml");
@@ -62,7 +62,7 @@ public class DocxReader {
 
         NodeList paragraphs = doc.getElementsByTagName("w:p");
 
-        for(int i = 0; i< paragraphs.getLength(); i++){
+        for(int i = 0; i < paragraphs.getLength(); i++){
             Element paragraph = (Element) paragraphs.item(i);
             processParagraph(paragraph, documentEntry);
         }
@@ -71,9 +71,20 @@ public class DocxReader {
     }
 
     private void processParagraph(Element paragraph, List<DocumentString> documentEntry) {
-        FontProperties fontProperties = extractFontProperties(paragraph);
+        // Вместо извлечения текста и свойств из всего параграфа,
+        // обрабатываем отдельные прогоны (w:r) внутри параграфа
 
-        String text = extractText(paragraph);
+        NodeList runs = paragraph.getElementsByTagName("w:r");
+
+        for (int i = 0; i < runs.getLength(); i++) {
+            Element run = (Element) runs.item(i);
+            processRun(run, documentEntry);
+        }
+    }
+
+    private void processRun(Element run, List<DocumentString> documentEntry) {
+        FontProperties fontProperties = extractFontProperties(run); // Передаем run, а не paragraph!
+        String text = extractText(run); // Передаем run, а не paragraph!
 
         if(text != null && !text.trim().isEmpty()){
             DocumentString deletion = new DocumentString(
@@ -86,10 +97,10 @@ public class DocxReader {
         }
     }
 
-    private String extractText(Element paragraph) {
+    private String extractText(Element run) {
         StringBuilder text = new StringBuilder();
 
-        NodeList textNodes = paragraph.getElementsByTagName("w:t");
+        NodeList textNodes = run.getElementsByTagName("w:t");
 
         for (int i =0; i < textNodes.getLength(); i++){
             Element textElem = (Element) textNodes.item(i);
@@ -102,12 +113,12 @@ public class DocxReader {
         return text.toString();
     }
 
-    private FontProperties extractFontProperties(Element paragraph) {
+    private FontProperties extractFontProperties(Element run) {
         int defaultSize = 0;
         String defaultFont = "";
         boolean isBold = false;
 
-        NodeList runProperties = paragraph.getElementsByTagName("w:rPr");
+        NodeList runProperties = run.getElementsByTagName("w:rPr");
         if(runProperties.getLength() > 0){
             Element rPr = (Element) runProperties.item(0);
 
