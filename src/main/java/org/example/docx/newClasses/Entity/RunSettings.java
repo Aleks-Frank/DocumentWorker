@@ -1,7 +1,6 @@
 package org.example.docx.newClasses.Entity;
 
-public class RunWordString {
-    private String text;
+public class RunSettings {
     private String nameFontText;
     private int sizeFontText;
     private Boolean isBold;
@@ -10,17 +9,7 @@ public class RunWordString {
     private String underline;
     private Boolean strikethrough;
 
-    public RunWordString(String text) {
-        this.text = text;
-    }
-
-    public RunWordString(String text, String nameFontText) {
-        this.text = text;
-        this.nameFontText = nameFontText;
-    }
-
-    public RunWordString(String text, String nameFontText, int sizeFontText, Boolean isBold, Boolean isItalic, String colorText, String underline, Boolean strikethrough) {
-        this.text = text;
+    public RunSettings(String nameFontText, int sizeFontText, Boolean isBold, Boolean isItalic, String colorText, String underline, Boolean strikethrough) {
         this.nameFontText = nameFontText;
         this.sizeFontText = sizeFontText;
         this.isBold = isBold;
@@ -28,14 +17,6 @@ public class RunWordString {
         this.colorText = colorText;
         this.underline = underline;
         this.strikethrough = strikethrough;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public String getNameFontText() {

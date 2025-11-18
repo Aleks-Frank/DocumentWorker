@@ -90,8 +90,8 @@ public class ReaderDocxFile {
     }
 
     private RunWordString parseRuns(Element runElement) {
-        RunWordString runWordString = new RunWordString(extractText(runElement));
-        return runWordString;
+        return new RunWordString(extractText(runElement),
+                extractNameFont(runElement));
     }
 
     private String extractText(Element run) {
@@ -99,7 +99,7 @@ public class ReaderDocxFile {
 
         NodeList textNodes = run.getElementsByTagName("w:t");
 
-        for (int i =0; i < textNodes.getLength(); i++){
+        for (int i = 0; i < textNodes.getLength(); i++){
             Element textElem = (Element) textNodes.item(i);
             String content = textElem.getTextContent();
             if(content != null){
@@ -108,6 +108,23 @@ public class ReaderDocxFile {
         }
 
         return text.toString();
+    }
+
+    private String extractNameFont(Element run){
+        String defaultFont = "Aptos";
+        NodeList runProperties = run.getElementsByTagName("w:rPr");
+        if(runProperties.getLength() > 0){
+            Element rPr = (Element) runProperties.item(0);
+            NodeList fontElements = rPr.getElementsByTagName("w:rFonts");
+            if(fontElements.getLength() > 0){
+                Element fontElem = (Element) fontElements.item(0);
+                String fontName = fontElem.getAttribute("w:ascii");
+                if(!fontName.isEmpty()){
+                    defaultFont = fontName;
+                }
+            }
+        }
+        return defaultFont;
     }
 
     public List<ParagraphWordClass> parseFromResources(String resourcePath) throws Exception {
