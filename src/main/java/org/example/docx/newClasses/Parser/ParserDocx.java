@@ -1,11 +1,13 @@
 package org.example.docx.newClasses.Parser;
 
 import org.example.docx.newClasses.Entity.ParagraphWordClass;
+import org.example.docx.newClasses.Entity.RunSettings;
 import org.example.docx.newClasses.Entity.RunWordString;
 import org.example.docx.newClasses.Reader.ReaderDocxFile;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class ParserDocx {
     public static List<ParagraphWordClass> parse(String filePath) {
@@ -36,9 +38,61 @@ public class ParserDocx {
         return text.toString();
     }
 
-    public static Boolean compareDocument(String firstDoc, String secondDoc){
-        List<ParagraphWordClass> firstDocParagraphs = parse(firstDoc);
+    public static Boolean compareDocument(String firstDoc, String secondDoc) throws Exception {
+        List<ParagraphWordClass> firstDocParagraphs = parseFromResources(firstDoc);
         List<ParagraphWordClass> secondDocParagraphs = parse(secondDoc);
+        if(firstDocParagraphs == secondDocParagraphs) return true;
+        if(firstDocParagraphs == null || secondDocParagraphs == null) return false;
+        if(firstDocParagraphs.size() != secondDocParagraphs.size()) return false;
+
+        for (int i = 0; i < firstDocParagraphs.size(); i++){
+            if(!paragraphEqual(firstDocParagraphs.get(i), secondDocParagraphs.get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean paragraphEqual(ParagraphWordClass firstParagraph, ParagraphWordClass secondParagraph) {
+        if(firstParagraph == secondParagraph) return true;
+        if(firstParagraph == null || secondParagraph == null) return false;
+
+        return Objects.equals(firstParagraph.getAlignment(), secondParagraph.getAlignment()) &&
+                runListEqual(firstParagraph.getParagraph(), secondParagraph.getParagraph());
+    }
+
+    private static boolean runListEqual(List<RunWordString> firstRunList, List<RunWordString> secondRunList) {
+        if(firstRunList == secondRunList) return true;
+        if(firstRunList == null || secondRunList == null) return false;
+        if(firstRunList.size() != secondRunList.size()) return false;
+
+        for (int i = 0; i < firstRunList.size(); i++){
+            if(!runEqual(firstRunList.get(i), secondRunList.get(i))){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean runEqual(RunWordString firstRun, RunWordString secondRun) {
+        if(firstRun == secondRun) return true;
+        if(firstRun == null || secondRun == null) return false;
+
+        return Objects.equals(firstRun.getText(), secondRun.getText()) &&
+                settingsEqual(firstRun.getSettings(), secondRun.getSettings());
+    }
+
+    private static boolean settingsEqual(RunSettings firstSettings, RunSettings secondSettings) {
+        if(firstSettings == secondSettings) return true;
+        if(firstSettings == null || secondSettings == null) return false;
+
+        return firstSettings.getSizeFontText() == secondSettings.getSizeFontText() &&
+                Objects.equals(firstSettings.getNameFontText(), secondSettings.getNameFontText()) &&
+                Objects.equals(firstSettings.getBold(), secondSettings.getBold()) &&
+                Objects.equals(firstSettings.getItalic(), secondSettings.getItalic()) &&
+                Objects.equals(firstSettings.getColorText(), secondSettings.getColorText()) &&
+                Objects.equals(firstSettings.getUnderline(), secondSettings.getUnderline()) &&
+                Objects.equals(firstSettings.getStrikethrough(), secondSettings.getStrikethrough());
     }
 
     public void infoFromFile(String path){

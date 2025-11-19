@@ -1,5 +1,7 @@
 package org.example.docx.newClasses.Entity;
 
+import java.util.Objects;
+
 public class RunWordString {
     private String text;
     private RunSettings settings;
@@ -23,5 +25,17 @@ public class RunWordString {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RunWordString that = (RunWordString) o;
+        return Objects.equals(text, that.text) && Objects.equals(settings, that.settings);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(text, settings);
     }
 }

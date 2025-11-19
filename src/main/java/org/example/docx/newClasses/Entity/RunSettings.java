@@ -76,4 +76,22 @@ public class RunSettings {
     public void setStrikethrough(Boolean strikethrough) {
         this.strikethrough = strikethrough;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        RunSettings that = (RunSettings) o;
+        return sizeFontText == that.sizeFontText
+                && Objects.equals(nameFontText, that.nameFontText)
+                && Objects.equals(isBold, that.isBold)
+                && Objects.equals(isItalic, that.isItalic)
+                && Objects.equals(colorText, that.colorText)
+                && Objects.equals(underline, that.underline)
+                && Objects.equals(strikethrough, that.strikethrough);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nameFontText, sizeFontText, isBold, isItalic, colorText, underline, strikethrough);
+    }
 }
