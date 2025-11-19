@@ -1,5 +1,7 @@
 package org.example.docx.newClasses.Entity;
 
+import java.util.Objects;
+
 public class RunSettings {
     private String nameFontText;
     private int sizeFontText;

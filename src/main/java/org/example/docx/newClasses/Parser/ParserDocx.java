@@ -30,9 +30,89 @@ public class ParserDocx {
             for (RunWordString run : paragraph.getParagraph()) {
                 text.append(run.getText());
             }
-            text.append("\n"); // Добавляем перенос между параграфами
+            text.append("\n");
         }
 
         return text.toString();
     }
+
+    public static Boolean compareDocument(String firstDoc, String secondDoc){
+        List<ParagraphWordClass> firstDocParagraphs = parse(firstDoc);
+        List<ParagraphWordClass> secondDocParagraphs = parse(secondDoc);
+    }
+
+    public void infoFromFile(String path){
+        try {
+            List<ParagraphWordClass> paragraphs = ParserDocx.parse(path);
+
+            System.out.println("Найдено " + paragraphs.size() + " параграфов:");
+
+            for (int i = 0; i < paragraphs.size(); i++) {
+                ParagraphWordClass paragraph = paragraphs.get(i);
+                System.out.println("\n=== Параграф " + (i + 1) + " ===");
+                System.out.println("Выравнивание: " + paragraph.getAlignment());
+
+                List<RunWordString> runs = paragraph.getParagraph();
+                System.out.println("Прогонов: " + runs.size());
+
+                for (int j = 0; j < runs.size(); j++) {
+                    RunWordString run = runs.get(j);
+                    System.out.println("  Прогон " + (j + 1) + ":");
+                    System.out.println("    Текст: '" + run.getText() + "'");
+                    System.out.println("    Шрифт: " + run.getSettings().getNameFontText());
+                    System.out.println("    Размер: " + run.getSettings().getSizeFontText());
+                    System.out.println("    Жирный: " + run.getSettings().getBold());
+                    System.out.println("    Курсив: " + run.getSettings().getItalic());
+                    System.out.println("    Цвет: " + run.getSettings().getColorText());
+                    System.out.println("    Подчеркивание: " + run.getSettings().getUnderline());
+                    System.out.println("    Зачеркивание: " + run.getSettings().getStrikethrough());
+                }
+            }
+
+            String plainText = ParserDocx.getPlainText(paragraphs);
+            System.out.println("\n=== ВЕСЬ ТЕКСТ ===");
+            System.out.println(plainText);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void infoFromResources(String path){
+        try {
+            List<ParagraphWordClass> paragraphs = ParserDocx.parseFromResources(path);
+
+            System.out.println("Найдено " + paragraphs.size() + " параграфов:");
+
+            for (int i = 0; i < paragraphs.size(); i++) {
+                ParagraphWordClass paragraph = paragraphs.get(i);
+                System.out.println("\n=== Параграф " + (i + 1) + " ===");
+                System.out.println("Выравнивание: " + paragraph.getAlignment());
+
+                List<RunWordString> runs = paragraph.getParagraph();
+                System.out.println("Прогонов: " + runs.size());
+
+                for (int j = 0; j < runs.size(); j++) {
+                    RunWordString run = runs.get(j);
+                    System.out.println("  Прогон " + (j + 1) + ":");
+                    System.out.println("    Текст: '" + run.getText() + "'");
+                    System.out.println("    Шрифт: " + run.getSettings().getNameFontText());
+                    System.out.println("    Размер: " + run.getSettings().getSizeFontText());
+                    System.out.println("    Жирный: " + run.getSettings().getBold());
+                    System.out.println("    Курсив: " + run.getSettings().getItalic());
+                    System.out.println("    Цвет: " + run.getSettings().getColorText());
+                    System.out.println("    Подчеркивание: " + run.getSettings().getUnderline());
+                    System.out.println("    Зачеркивание: " + run.getSettings().getStrikethrough());
+                }
+            }
+
+            String plainText = ParserDocx.getPlainText(paragraphs);
+            System.out.println("\n=== ВЕСЬ ТЕКСТ ===");
+            System.out.println(plainText);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

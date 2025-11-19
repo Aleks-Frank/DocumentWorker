@@ -1,7 +1,7 @@
 package org.example.docx.newClasses.Reader;
 
-import org.example.docx.DocumentString;
 import org.example.docx.newClasses.Entity.ParagraphWordClass;
+import org.example.docx.newClasses.Entity.RunSettings;
 import org.example.docx.newClasses.Entity.RunWordString;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -86,12 +86,98 @@ public class ReaderDocxFile {
             }
         }
         paragraphWord.setParagraph(runList);
+        paragraphWord.setAlignment(parseAlignment(paragraph));
         return  paragraphWord;
+    }
+
+    private String parseAlignment(Element paragraph) {
+        String defaultAlign = "left";
+
+        NodeList paragraphProperties = paragraph.getElementsByTagName("w:pPr");
+        if(paragraphProperties.getLength() > 0) {
+            Element pPr = (Element) paragraphProperties.item(0);
+            NodeList justification = pPr.getElementsByTagName("w:jc");
+            if(justification.getLength() > 0){
+                Element jc = (Element) justification.item(0);
+                defaultAlign = jc.getAttribute("w:val");
+            }
+        }
+        return defaultAlign;
     }
 
     private RunWordString parseRuns(Element runElement) {
         return new RunWordString(extractText(runElement),
-                extractNameFont(runElement));
+                extractSettings(runElement));
+    }
+
+    private RunSettings extractSettings(Element runElement) {
+        int defaultSize = 12;
+        String defaultNameFont = "Calibri";
+        boolean defaultIsBold = false;
+        boolean defaultIsItalic = false;
+        String defaultColorText = "black";
+        String defaultUnderline = "null";
+        boolean defaultStrikethrough = false;
+
+
+        NodeList runProperties = runElement.getElementsByTagName("w:rPr");
+        if(runProperties.getLength() > 0){
+            Element rPr = (Element) runProperties.item(0);
+
+            NodeList boldElements = rPr.getElementsByTagName("w:b");
+            if(boldElements.getLength() > 0){
+                defaultIsBold = true;
+            }
+
+            NodeList italicElements = rPr.getElementsByTagName("w:i");
+            if(italicElements.getLength() > 0){
+                defaultIsItalic = true;
+            }
+
+            NodeList strikethroughElements = rPr.getElementsByTagName("w:strike");
+            if(strikethroughElements.getLength() > 0){
+                defaultStrikethrough = true;
+            }
+
+            NodeList sizeElement = rPr.getElementsByTagName("w:sz");
+            if(sizeElement.getLength() > 0){
+                Element sizeElem = (Element) sizeElement.item(0);
+                String sizeValue = sizeElem.getAttribute("w:val");
+                if(!sizeValue.isEmpty()){
+                    defaultSize = Integer.parseInt(sizeValue) / 2;
+                }
+            }
+
+            NodeList colorElement = rPr.getElementsByTagName("w:color");
+            if(colorElement.getLength() > 0){
+                Element colorElem = (Element) colorElement.item(0);
+                String color = colorElem.getAttribute("w:val");
+                if(!color.isEmpty()){
+                    defaultColorText = color;
+                }
+            }
+
+            NodeList underlineElement = rPr.getElementsByTagName("w:u");
+            if(underlineElement.getLength() > 0){
+                Element underlineElem = (Element) underlineElement.item(0);
+                String nameUnderline = underlineElem.getAttribute("w:val");
+                if(!nameUnderline.isEmpty()) {
+                    defaultUnderline = nameUnderline;
+                }
+            }
+
+            NodeList fontElements = rPr.getElementsByTagName("w:rFonts");
+            if(fontElements.getLength() > 0){
+                Element fontElem = (Element) fontElements.item(0);
+                String fontName = fontElem.getAttribute("w:ascii");
+                if(!fontName.isEmpty()){
+                    defaultNameFont = fontName;
+                }
+            }
+
+        }
+
+        return new RunSettings(defaultNameFont, defaultSize, defaultIsBold, defaultIsItalic, defaultColorText, defaultUnderline, defaultStrikethrough);
     }
 
     private String extractText(Element run) {
@@ -165,6 +251,7 @@ public class ReaderDocxFile {
 
         return deletions;
     }
+
 
 
 }
