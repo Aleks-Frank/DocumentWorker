@@ -3,6 +3,7 @@ package org.example.docx.newClasses.Reader;
 import org.example.docx.newClasses.Entity.ParagraphWordClass;
 import org.example.docx.newClasses.Entity.RunSettings;
 import org.example.docx.newClasses.Entity.RunWordString;
+import org.example.docx.newClasses.SpacesWorker.SpaceWorker;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -85,7 +86,9 @@ public class ReaderDocxFile {
                 runList.add(run);
             }
         }
-        paragraphWord.setParagraph(runList);
+
+        List<RunWordString> cleanedRuns = SpaceWorker.processSpaces(runList);
+        paragraphWord.setParagraph(cleanedRuns);
         paragraphWord.setAlignment(parseAlignment(paragraph));
         return  paragraphWord;
     }
